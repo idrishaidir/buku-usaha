@@ -1,7 +1,3 @@
-Berikut adalah rancangan draf untuk berkas `README.md` proyek BukuUsaha Anda. Teks ini ditulis dengan gaya bahasa yang profesional, jelas, informatif, dan sepenuhnya bebas dari penggunaan emoticon sesuai dengan instruksi Anda.
-
-Anda dapat menyalin seluruh teks di dalam blok kode di bawah ini dan menempelkannya ke dalam berkas `README.md` di folder utama repositori Anda.
-
 ````markdown
 # BukuUsaha - Sistem Pencatatan Keuangan UMKM
 
