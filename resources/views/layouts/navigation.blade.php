@@ -13,7 +13,13 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                        {{ __('Dasbor') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('transactions.create')" :active="request()->routeIs('transactions.create')">
+                        {{ __('Catat Transaksi') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.index')">
+                        {{ __('Riwayat') }}
                     </x-nav-link>
                 </div>
             </div>

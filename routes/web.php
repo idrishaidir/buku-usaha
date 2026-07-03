@@ -8,25 +8,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/transactions', [TransactionController::class, 'store'])
-    ->middleware(['auth', 'verified'])
-    ->name('transactions.store');
+Route::middleware(['auth', 'verified'])->group(function() {
+    // Rute Dashboard
+    Route::get('/dashboard', [TransactionController::class, 'dashboard'])->name('dashboard');
 
-Route::get('/dashboard', [TransactionController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-Route::get('/transactions/{transaction}/edit', [TransactionController::class, 'edit'])
-    ->middleware(['auth', 'verified'])
-    ->name('transactions.edit');
-
-Route::put('/transactions/{transaction}', [TransactionController::class, 'update'])
-    ->middleware(['auth', 'verified'])
-    ->name('transactions.update');
-
-Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy'])
-    ->middleware(['auth', 'verified'])
-    ->name('transactions.destroy');
+    // Rute Transaksi (Riwayat, Form Tambah, Simpan, Edit, Hapus)
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/create', [TransactionController::class, 'create'])->name('transactions.create');
+    Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::get('/transactions/{transaction}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
+    Route::put('/transactions/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
+    Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

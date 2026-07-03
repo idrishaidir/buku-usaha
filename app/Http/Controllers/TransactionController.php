@@ -10,20 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
-    public function index(Request $request)
+    // Dashboard
+    public function dashboard()
     {
         $user = Auth::user();
-
-        $query = Transaction::where('user_id', $user->id);
-
-        // Fitur pencarian riwayat transaksi berdasarkan tanggal
-        if ($request->filled('start_date') && $request->filled('end_date')){
-            $query->whereBetween('transaction_date', [$request->start_date, $request->end_date]);
-        }
-
-        // Mengambil data transaksi yang sudah difilter atau semeua jika tidak difilter
-        $transactions = $query->orderBy('transaction_date', 'desc')->get();
-
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
 
@@ -39,37 +29,37 @@ class TransactionController extends Controller
             ->whereYear('transaction_date', $currentYear)
             ->sum('amount');
 
-        #Menghitung
-        $allIncome = Transaction::where('user_id', $user->id)->where('type', 'pemasukan')->sum('amount');
-        $allExpense = Transaction::where('user_id', $user->id)->where('type', 'pengeluaran')->sum('amount');
+        $allIncome = Transaction::where('user_id', $user->id)
+            ->where('type', 'pemasukan')
+            ->sum('amount');
+
+        $allExpense = Transaction::where('user_id', $user->id)
+            ->where('type', 'pengeluaran')
+            ->sum('amount');
+        
         $totalBalance = $allIncome - $allExpense;
 
-        // Grafik
         $daysInMonth = Carbon::now()->daysInMonth;
         $chartLabels = [];
         $chartIncome = [];
         $chartExpense = [];
 
-        for ($i = 1; $i <= $daysInMonth; $i++) {
+        for ($i = 1; $i <= $daysInMonth; $i++){
             $chartLabels[] = $i;
-
             $dateString = Carbon::now()->startOfMonth()->addDays($i - 1)->format('Y-m-d');
-            
-            $dailyIncome = Transaction::where('user_id', $user->id)
+
+            $chartIncome[] = Transaction::where('user_id', $user->id)
                 ->where('transaction_date', $dateString)
                 ->where('type', 'pemasukan')
                 ->sum('amount');
 
-            $dailyExpense = Transaction::where('user_id', $user->id)
+            $chartExpense[] = Transaction::where('user_id', $user->id)
                 ->where('transaction_date', $dateString)
                 ->where('type', 'pengeluaran')
                 ->sum('amount');
-
-            $chartIncome[] = $dailyIncome;
-            $chartExpense[] = $dailyExpense;
         }
+
         return view('dashboard', compact(
-            'transactions',
             'totalBalance',
             'totalIncomeMonth',
             'totalExpenseMonth',
@@ -79,6 +69,25 @@ class TransactionController extends Controller
         ));
     }
 
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $query = Transaction::where('user_id', $user->id);
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('transaction_date', [$request->start_date, $request->end_date]);
+        }
+
+        $transactions = $query->orderBy('transaction_date', 'desc')->get();
+
+        return view('transactions.index', compact('transactions'));
+    }
+
+    public function create()
+    {
+        return view('transactions.create');
+    }
+    
     public function store(Request $request)
     {
         // Validasi Input Pengguna
